@@ -207,7 +207,11 @@ namespace Files.Uwp.ViewModels
             }
         }
 
-        public bool AreFileTagsEnabled
+        public bool ShowPlaceholder =>
+	        !(ShowFavoritesSection || ShowLibrarySection || ShowDrivesSection ||
+	          ShowCloudDrivesSection || ShowNetworkDrivesSection || ShowWslSection);
+
+		public bool AreFileTagsEnabled
         {
             get => UserSettingsService.PreferencesSettingsService.AreFileTagsEnabled;
         }
@@ -235,6 +239,7 @@ namespace Files.Uwp.ViewModels
             Manager_DataChanged(SectionType.Network, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             Manager_DataChanged(SectionType.WSL, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             Manager_DataChanged(SectionType.FileTag, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            Manager_DataChanged(SectionType.Placeholder, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
             App.SidebarPinnedController.DataChanged += Manager_DataChanged;
             App.LibraryManager.DataChanged += Manager_DataChanged;
@@ -259,6 +264,7 @@ namespace Files.Uwp.ViewModels
                     SectionType.WSL => App.WSLDistroManager.Distros,
                     SectionType.Library => App.LibraryManager.Libraries,
                     SectionType.FileTag => App.FileTagsManager.FileTags,
+					SectionType.Placeholder => new List<INavigationControlItem>(0),
                     _ => null
                 };
                 await SyncSidebarItems(section, getElements, e);
@@ -357,9 +363,32 @@ namespace Files.Uwp.ViewModels
 
         private async Task<LocationItem> GetOrCreateSection(SectionType sectionType)
         {
-            var sectionOrder = new[] { SectionType.Favorites, SectionType.Library, SectionType.Drives, SectionType.CloudDrives, SectionType.Network, SectionType.WSL, SectionType.FileTag };
+            var sectionOrder = new[] { SectionType.Placeholder, SectionType.Favorites, SectionType.Library, SectionType.Drives, SectionType.CloudDrives, SectionType.Network, SectionType.WSL, SectionType.FileTag };
             switch (sectionType)
             {
+	            case SectionType.Placeholder:
+	            {
+		            var section = SideBarItems.FirstOrDefault(x => x.Text == "Test") as LocationItem;
+		            if (ShowPlaceholder && section == null)
+		            {
+			            section = new LocationItem()
+			            {
+				            Text = "Test",
+				            Section = SectionType.Placeholder,
+				            MenuOptions = new ContextMenuOptions
+				            {
+					            ShowHideSection = true
+				            },
+				            SelectsOnInvoked = false,
+				            Font = App.MainViewModel.FontName,
+				            ChildItems = new BulkConcurrentObservableCollection<INavigationControlItem>()
+			            };
+			            var index = sectionOrder.TakeWhile(x => x != sectionType).Select(x => SideBarItems.Any(item => item.Section == x) ? 1 : 0).Sum();
+			            SideBarItems.Insert(Math.Min(index, SideBarItems.Count), section);
+			            // section.Icon = await UIHelpers.GetIconResource(Constants.Shell32.QuickAccess); // After insert
+		            }
+		            return section;
+	            }
                 case SectionType.Favorites:
                     {
                         var section = SideBarItems.FirstOrDefault(x => x.Text == "SidebarFavorites".GetLocalized()) as LocationItem;
@@ -558,6 +587,8 @@ namespace Files.Uwp.ViewModels
 
         private void UserSettingsService_OnSettingChangedEvent(object sender, SettingChangedEventArgs e)
         {
+	        UpdateSectionVisibility(SectionType.Placeholder, ShowPlaceholder);
+
             switch (e.SettingName)
             {
                 case nameof(UserSettingsService.AppearanceSettingsService.IsSidebarOpen):

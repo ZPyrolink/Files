@@ -23,7 +23,8 @@ namespace Files.Uwp.Filesystem
         LinuxDistro,
         Location,
         CloudDrive,
-        FileTag
+        FileTag,
+        Placeholder
     }
 
     public enum SectionType
@@ -35,7 +36,8 @@ namespace Files.Uwp.Filesystem
         CloudDrives,
         Network,
         WSL,
-        FileTag
+        FileTag,
+        Placeholder
     }
 
     public class ContextMenuOptions
