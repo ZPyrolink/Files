@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +18,9 @@ using Files.Shared.Extensions;
 using System.Collections.Specialized;
 using Windows.System;
 using System.Threading.Tasks;
+using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
+using NavigationViewDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode;
+using NavigationViewDisplayModeChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs;
 
 namespace Files.Uwp.ViewModels
 {
@@ -363,32 +365,32 @@ namespace Files.Uwp.ViewModels
 
         private async Task<LocationItem> GetOrCreateSection(SectionType sectionType)
         {
-            var sectionOrder = new[] { SectionType.Placeholder, SectionType.Favorites, SectionType.Library, SectionType.Drives, SectionType.CloudDrives, SectionType.Network, SectionType.WSL, SectionType.FileTag };
+	        var sectionOrder = new[] { SectionType.Placeholder, SectionType.Favorites, SectionType.Library, SectionType.Drives, SectionType.CloudDrives, SectionType.Network, SectionType.WSL, SectionType.FileTag };
             switch (sectionType)
             {
 	            case SectionType.Placeholder:
-	            {
-		            var section = SideBarItems.FirstOrDefault(x => x.Text == "SidebarPlaceholder".GetLocalized()) as LocationItem;
-		            if (ShowPlaceholder && section == null)
 		            {
-			            section = new LocationItem()
+			            var section = SideBarItems.FirstOrDefault(x => x.Text == "SidebarPlaceholder".GetLocalized()) as LocationItem;
+			            if (ShowPlaceholder && section == null)
 			            {
-				            Text = "SidebarPlaceholder".GetLocalized(),
-				            Section = SectionType.Placeholder,
-				            MenuOptions = new ContextMenuOptions
+				            section = new LocationItem()
 				            {
-					            ShowHideSection = true
-				            },
-				            SelectsOnInvoked = false,
-				            Font = App.MainViewModel.FontName,
-				            ChildItems = new BulkConcurrentObservableCollection<INavigationControlItem>()
-			            };
-			            var index = sectionOrder.TakeWhile(x => x != sectionType).Select(x => SideBarItems.Any(item => item.Section == x) ? 1 : 0).Sum();
-			            SideBarItems.Insert(Math.Min(index, SideBarItems.Count), section);
-			            // section.Icon = await UIHelpers.GetIconResource(Constants.Shell32.QuickAccess); // After insert
+					            Text = "SidebarPlaceholder".GetLocalized(),
+					            Section = SectionType.Placeholder,
+					            MenuOptions = new ContextMenuOptions
+					            {
+						            ShowHideSection = true
+					            },
+					            SelectsOnInvoked = false,
+					            Font = App.MainViewModel.FontName,
+					            ChildItems = new BulkConcurrentObservableCollection<INavigationControlItem>()
+				            };
+				            var index = sectionOrder.TakeWhile(x => x != sectionType).Select(x => SideBarItems.Any(item => item.Section == x) ? 1 : 0).Sum();
+				            SideBarItems.Insert(Math.Min(index, SideBarItems.Count), section);
+				            // section.Icon = await UIHelpers.GetIconResource(Constants.Shell32.QuickAccess); // After insert
+			            }
+			            return section;
 		            }
-		            return section;
-	            }
                 case SectionType.Favorites:
                     {
                         var section = SideBarItems.FirstOrDefault(x => x.Text == "SidebarFavorites".GetLocalized()) as LocationItem;
