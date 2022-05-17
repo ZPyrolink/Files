@@ -368,12 +368,12 @@ namespace Files.Uwp.ViewModels
             {
 	            case SectionType.Placeholder:
 	            {
-		            var section = SideBarItems.FirstOrDefault(x => x.Text == "Test") as LocationItem;
+		            var section = SideBarItems.FirstOrDefault(x => x.Text == "SidebarPlaceholder".GetLocalized()) as LocationItem;
 		            if (ShowPlaceholder && section == null)
 		            {
 			            section = new LocationItem()
 			            {
-				            Text = "Test",
+				            Text = "SidebarPlaceholder".GetLocalized(),
 				            Section = SectionType.Placeholder,
 				            MenuOptions = new ContextMenuOptions
 				            {

@@ -219,11 +219,7 @@
                                         <CompositeTransform x:Name="PaneTransform" />
                                     </Grid.RenderTransform>
 
-									<NavigationViewItem>
-										<TextBlock Text="Saluts"/>
-									</NavigationViewItem>
-
-                                    <Border Child="{TemplateBinding Pane}" />
+	                                <Border Child="{TemplateBinding Pane}" />
 
                                     <Rectangle
                                         x:Name="HCPaneBorder"

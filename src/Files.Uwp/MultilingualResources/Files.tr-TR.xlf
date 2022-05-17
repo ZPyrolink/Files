@@ -3559,6 +3559,10 @@ Uygulama kullanımını takip etmek, hataları bulmak ve çökmeleri düzeltmek 
           <source>Move operation is not supported in this context. Do you want to copy the items instead?</source>
           <target state="new">Move operation is not supported in this context. Do you want to copy the items instead?</target>
         </trans-unit>
+        <trans-unit id="SidebarPlaceholder" translate="yes" xml:space="preserve">
+          <source>Add items to sidebar from settings</source>
+          <target state="new">Add items to sidebar from settings</target>
+        </trans-unit>
       </group>
     </body>
   </file>
